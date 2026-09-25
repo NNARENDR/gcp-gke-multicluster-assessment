@@ -117,6 +117,52 @@ gcloud storage buckets create gs://gke-assessment-tfstate \
   --location=us-central1 --uniform-bucket-level-access
 gcloud storage buckets update gs://gke-assessment-tfstate --versioning
 
+## 3.1 Terraform Setup
+
+### Prerequisites
+- Google Cloud SDK (`gcloud`), Terraform >= 1.5, `kubectl` (Cloud Shell used for this project)
+- Terraform is not preinstalled in Cloud Shell; install it from the HashiCorp apt repo:
+  https://developer.hashicorp.com/terraform/install
+
+### Files
+| File | Purpose |
+|---|---|
+| `versions.tf` | Terraform/provider versions and GCS remote backend |
+| `provider.tf` | Google provider (project, region) |
+| `variables.tf` | Input variables (project ID, regions) |
+| `terraform.tfvars.example` | Sample values; copy to `terraform.tfvars` |
+| `network.tf` | VPC, subnets, Cloud Router, Cloud NAT, firewall, Private Service Access |
+| `outputs.tf` | Output values |
+| `.terraform.lock.hcl` | Pins the provider version (committed) |
+
+### Remote state
+State is stored in the GCS bucket `gke-assessment-tfstate` (versioning enabled, native locking).
+The bucket is created once with `gcloud` before Terraform runs, because the backend must exist before `terraform init`.
+
+### Run
+```bash
+cd terraform
+cp terraform.tfvars.example terraform.tfvars   # set project_id
+terraform init
+terraform fmt
+terraform validate
+terraform plan
+terraform apply
+```
+
+Drift check: `terraform plan -refresh-only`
+
+## 4. Networking
+| Subnet | Region | Nodes | Pods | Services |
+|---|---|---|---|---|
+| gke-primary-subnet | us-central1 | 10.10.0.0/20 | 10.20.0.0/16 | 10.30.0.0/20 |
+| gke-secondary-subnet | us-east1 | 10.11.0.0/20 | 10.21.0.0/16 | 10.31.0.0/20 |
+| ops-subnet | us-central1 | 10.12.0.0/24 | – | – |
+
+- Custom-mode VPC `gke-vpc` with VPC-native (alias IP) ranges for pods and services
+- Cloud Router + Cloud NAT per region: outbound internet for private nodes, no inbound exposure
+- Firewall: internal traffic, Google LB health-check ranges (`35.191.0.0/16`, `130.211.0.0/22`), IAP-only SSH
+- Private Service Access for Google managed services (Cloud SQL, Memorystore)
 
 ```
 
