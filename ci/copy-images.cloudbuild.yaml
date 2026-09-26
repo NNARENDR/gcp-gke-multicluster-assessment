@@ -1,0 +1,14 @@
+steps:
+- name: gcr.io/cloud-builders/docker
+  args: ['pull', 'us-docker.pkg.dev/google-samples/containers/gke/hello-app:1.0']
+- name: gcr.io/cloud-builders/docker
+  args: ['tag', 'us-docker.pkg.dev/google-samples/containers/gke/hello-app:1.0', 'us-docker.pkg.dev/gke-assessment/apps/hello-app:1.0']
+- name: gcr.io/cloud-builders/docker
+  args: ['pull', 'us-docker.pkg.dev/google-samples/containers/gke/whereami:v1.2.27']
+- name: gcr.io/cloud-builders/docker
+  args: ['tag', 'us-docker.pkg.dev/google-samples/containers/gke/whereami:v1.2.27', 'us-docker.pkg.dev/gke-assessment/apps/whereami:v1.2.27']
+images:
+- 'us-docker.pkg.dev/gke-assessment/apps/hello-app:1.0'
+- 'us-docker.pkg.dev/gke-assessment/apps/whereami:v1.2.27'
+options:
+  logging: CLOUD_LOGGING_ONLY
