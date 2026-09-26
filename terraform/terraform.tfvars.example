@@ -1,1 +1,7 @@
 project_id = "your-project-id"
+
+team_members = {
+  dev = "group:dev-team@example.com"
+  ops = "group:ops-team@example.com"
+  sre = "group:sre-team@example.com"
+}
