@@ -14,3 +14,9 @@ variable "secondary_region" {
   type        = string
   default     = "us-east1"
 }
+
+variable "team_members" {
+  description = "Optional IAM member per team, e.g. { dev = \"group:dev-team@googlegroups.com\" }"
+  type        = map(string)
+  default     = {}
+}
