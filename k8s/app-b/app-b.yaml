@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: app-b-ksa
+  namespace: apps
+  annotations:
+    iam.gke.io/gcp-service-account: app-b-sa@gke-assessment.iam.gserviceaccount.com
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-b-config
+  namespace: apps
+data:
+  METADATA: "app-b"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-b
+  namespace: apps
+  labels: { app: app-b }
+spec:
+  replicas: 3
+  selector:
+    matchLabels: { app: app-b }
+  template:
+    metadata:
+      labels: { app: app-b }
+    spec:
+      serviceAccountName: app-b-ksa
+      containers:
+      - name: whereami
+        image: us-docker.pkg.dev/gke-assessment/apps/whereami:v1.2.27
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef: { name: app-b-config }
+        resources:
+          requests: { cpu: 50m, memory: 64Mi }
+          limits:   { cpu: 200m, memory: 256Mi }
+        readinessProbe:
+          httpGet: { path: /healthz, port: 8080 }
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet: { path: /healthz, port: 8080 }
+          initialDelaySeconds: 10
+          periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-b
+  namespace: apps
+spec:
+  type: ClusterIP
+  selector: { app: app-b }
+  ports:
+  - port: 80
+    targetPort: 8080
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: app-b
+  namespace: apps
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: app-b
+  minReplicas: 3
+  maxReplicas: 6
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target: { type: Utilization, averageUtilization: 60 }
