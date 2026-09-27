@@ -21,3 +21,11 @@ output "app_sa_emails" {
 output "cicd_sa_email" {
   value = google_service_account.cicd.email
 }
+
+output "registry_path" {
+  value = "us-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.apps.repository_id}"
+}
+
+output "cluster_names" {
+  value = { for k, c in google_container_cluster.this : k => "${c.name} (${c.location})" }
+}

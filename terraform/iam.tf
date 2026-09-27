@@ -61,6 +61,7 @@ locals {
   cicd_roles = [
     "roles/artifactregistry.writer",
     "roles/container.developer",
+    "roles/logging.logWriter",
   ]
 }
 
@@ -74,7 +75,8 @@ resource "google_project_iam_member" "cicd" {
 # ============ 4. Human teams (optional, set team_members in tfvars) ============
 locals {
   team_roles = {
-    dev = ["roles/container.developer", "roles/logging.viewer"]
+    dev = ["roles/container.developer",
+    "roles/logging.logWriter", "roles/logging.viewer"]
     ops = ["roles/container.admin", "roles/compute.networkViewer", "roles/monitoring.editor"]
     sre = ["roles/monitoring.editor", "roles/logging.viewer", "roles/container.viewer", "roles/bigquery.dataViewer"]
   }
