@@ -29,3 +29,7 @@ output "registry_path" {
 output "cluster_names" {
   value = { for k, c in google_container_cluster.this : k => "${c.name} (${c.location})" }
 }
+
+output "mci_ip" {
+  value = google_compute_global_address.mci.address
+}

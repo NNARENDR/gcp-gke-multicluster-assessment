@@ -1,0 +1,24 @@
+apiVersion: networking.gke.io/v1
+kind: MultiClusterIngress
+metadata:
+  name: apps-mci
+  namespace: apps
+  annotations:
+    networking.gke.io/static-ip: "130.211.22.144"
+spec:
+  template:
+    spec:
+      backend:
+        serviceName: app-a-mcs
+        servicePort: 80
+      rules:
+      - http:
+          paths:
+          - path: /b
+            backend:
+              serviceName: app-b-mcs
+              servicePort: 80
+          - path: /b/*
+            backend:
+              serviceName: app-b-mcs
+              servicePort: 80

@@ -1,0 +1,35 @@
+apiVersion: networking.gke.io/v1
+kind: MultiClusterService
+metadata:
+  name: app-a-mcs
+  namespace: apps
+  annotations:
+    cloud.google.com/backend-config: '{"ports": {"80":"app-a-bc"}}'
+spec:
+  template:
+    spec:
+      selector:
+        app: app-a
+      ports:
+      - name: web
+        protocol: TCP
+        port: 80
+        targetPort: 8080
+---
+apiVersion: networking.gke.io/v1
+kind: MultiClusterService
+metadata:
+  name: app-b-mcs
+  namespace: apps
+  annotations:
+    cloud.google.com/backend-config: '{"ports": {"80":"app-b-bc"}}'
+spec:
+  template:
+    spec:
+      selector:
+        app: app-b
+      ports:
+      - name: web
+        protocol: TCP
+        port: 80
+        targetPort: 8080
