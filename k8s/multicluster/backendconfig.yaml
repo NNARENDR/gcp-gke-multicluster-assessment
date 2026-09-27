@@ -4,6 +4,8 @@ metadata:
   name: app-a-bc
   namespace: apps
 spec:
+  securityPolicy:
+    name: apps-waf
   healthCheck:
     type: HTTP
     requestPath: /
@@ -19,6 +21,8 @@ metadata:
   name: app-b-bc
   namespace: apps
 spec:
+  securityPolicy:
+    name: apps-waf
   healthCheck:
     type: HTTP
     requestPath: /healthz
