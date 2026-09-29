@@ -6,6 +6,9 @@ metadata:
 spec:
   securityPolicy:
     name: apps-waf
+  logging:
+    enable: true
+    sampleRate: 1.0
   healthCheck:
     type: HTTP
     requestPath: /
@@ -23,6 +26,9 @@ metadata:
 spec:
   securityPolicy:
     name: apps-waf
+  logging:
+    enable: true
+    sampleRate: 1.0
   healthCheck:
     type: HTTP
     requestPath: /healthz
