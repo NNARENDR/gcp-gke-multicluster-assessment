@@ -1,0 +1,25 @@
+flowchart TB
+  user(["Users (internet)"]) --> armor["Cloud Armor policy apps-waf<br/>blocks SQLi / XSS, 100 req/min per IP"]
+  armor --> lb["Multi-cluster Ingress<br/>global HTTP LB, IP 130.211.22.144<br/>/ = app-a, /b = app-b"]
+  lb --> P
+  lb --> S
+  subgraph VPC["VPC gke-vpc, project gke-assessment"]
+    direction LR
+    subgraph P["gke-primary, us-central1 (config cluster)"]
+      direction TB
+      pa["app-a: 3 pods"]
+      pb["app-b: 3 pods"]
+    end
+    subgraph S["gke-secondary, us-east1"]
+      direction TB
+      sa["app-a: 3 pods"]
+      sb["app-b: 3 pods"]
+    end
+  end
+  P --> sm[("Secret Manager<br/>app-b-api-key<br/>via Workload Identity")]
+  P --> logs["Cloud Logging sinks"]
+  S --> logs
+  lb --> logs
+  logs --> bq[("BigQuery dataset gke_logs")]
+  bq --> g["Grafana Cloud dashboard"]
+  mon[("Cloud Monitoring<br/>CPU / memory")] --> g
