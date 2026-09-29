@@ -42,7 +42,7 @@ The Mermaid source for the diagram is in `docs/architecture.mmd`.
 │   ├── registry.tf         # Artifact Registry (docker)
 │   ├── gke.tf              # 2 private GKE clusters + node pools
 │   ├── fleet.tf            # fleet, Multi-cluster Services + Ingress features
-│   ├── workload-identity.tf# KSA -> GSA bindings
+│   ├── workload-identity.tf # KSA -> GSA bindings
 │   ├── lb.tf               # reserved global static IP
 │   ├── cloud-armor.tf      # WAF + rate limiting policy
 │   ├── secrets.tf          # Secret Manager secret + access for app-b only
